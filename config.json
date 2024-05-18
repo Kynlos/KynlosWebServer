@@ -1,0 +1,21 @@
+{
+  "port": 80,
+  "entry_point": "index.html",
+  "use_https": false,
+  "certfile": "cert.pem",
+  "keyfile": "key.pem",
+  "rate_limit": 10,
+  "log_file": "server.log",
+  "whitelist": [],
+  "blacklist": [],
+  "cert_config": {
+    "C": "US",
+    "ST": "California",
+    "L": "San Francisco",
+    "O": "My Company",
+    "OU": "My Organization",
+    "CN": "localhost",
+    "serial_number": 1000,
+    "valid_days": 3650
+  }
+}
