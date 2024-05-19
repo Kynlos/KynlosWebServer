@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Web Server</title>
+    <title>Kynlos Python Web Server</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -22,12 +22,23 @@
         .feature-icon {
             font-size: 2rem;
         }
+        .banner {
+            background: #ff9800;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+    <div class="banner">
+        Fully Portable and Cross-Platform Web Server
+    </div>
     <header class="bg-blue-600 text-white p-6 shadow-lg">
         <div class="container mx-auto text-center">
-            <h1 class="text-4xl font-bold">Python Web Server</h1>
+            <h1 class="text-4xl font-bold">Kynlos Python Web Server</h1>
             <p class="text-lg mt-2">A full-featured web server with PHP support</p>
         </div>
     </header>
@@ -40,84 +51,98 @@
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Static File Serving</h3>
-                        <p>Serves static files from the current directory.</p>
+                        <p>Serves static files from the current directory, allowing you to host HTML, CSS, JavaScript, images, and other static content.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">PHP Support</h3>
-                        <p>Supports PHP file execution.</p>
+                        <p>Executes PHP scripts using the <code>php</code> command, enabling dynamic content generation and server-side scripting.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Configurable</h3>
-                        <p>Configurable port and entry point.</p>
+                        <p>Highly configurable via a <code>config.json</code> file, allowing you to set the port, entry point, and other settings.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Logging</h3>
-                        <p>Detailed logging and error handling.</p>
+                        <p>Detailed logging of requests and errors to a log file, helping you monitor and debug your server.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Directory Listing</h3>
-                        <p>Directory listing for directories.</p>
+                        <p>Automatically generates a directory listing for directories, making it easy to browse files and folders.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">File Upload</h3>
-                        <p>File upload support.</p>
+                        <p>Supports file uploads via POST requests to <code>/upload</code>, with uploaded files saved in the specified directory.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Rate Limiting</h3>
-                        <p>Rate limiting to prevent abuse.</p>
+                        <p>Implements rate limiting to prevent abuse, configurable to allow a specific number of requests per minute per client.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">HTTPS Support</h3>
-                        <p>HTTPS support with automatic self-signed certificate generation.</p>
+                        <p>Supports HTTPS with automatic self-signed certificate generation, enhancing security for your web server.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">CORS Support</h3>
-                        <p>Cross-Origin Resource Sharing (CORS) support.</p>
+                        <p>Enables Cross-Origin Resource Sharing (CORS), allowing your server to handle requests from different origins.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">IP Whitelisting/Blacklisting</h3>
-                        <p>Allow or block access based on client IP addresses.</p>
+                        <p>Allows or blocks access based on client IP addresses, providing an additional layer of security.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Custom Error Pages</h3>
-                        <p>Serve custom HTML pages for different HTTP error codes.</p>
+                        <p>Serves custom HTML pages for different HTTP error codes, improving the user experience during errors.</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Static File Caching</h3>
-                        <p>Implement caching for static files to improve performance.</p>
+                        <p>Implements caching for static files to improve performance and reduce server load.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">Graceful Shutdown</h3>
+                        <p>Supports graceful shutdown on Ctrl-C, ensuring that all processes are properly terminated.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">Browser Auto-Open</h3>
+                        <p>Automatically opens the entry point in a web browser on server start, providing a convenient user experience.</p>
                     </div>
                 </div>
             </div>
@@ -135,17 +160,22 @@
 
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-6 text-center">File Upload</h2>
-            <p class="mb-4">You can upload files to the server by sending a POST request to <code class="bg-gray-200 p-1 rounded">/upload</code>. The uploaded files will be saved in the current directory.</p>
+            <p class="mb-4">You can upload files to the server by sending a POST request to <code class="bg-gray-200 p-1 rounded">/upload</code>. The uploaded files will be saved in the specified directory. This feature allows users to easily upload and manage files on the server.</p>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-center">File Download</h2>
+            <p class="mb-4">You can download files that have been uploaded to the server from the specified download directory. Access the files via the <code class="bg-gray-200 p-1 rounded">/downloads</code> endpoint. This feature provides a simple way to retrieve files stored on the server.</p>
         </section>
 
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-6 text-center">Rate Limiting</h2>
-            <p class="mb-4">The server implements rate limiting to prevent abuse. By default, the server allows up to 10 requests per minute per client. This can be configured in the <code class="bg-gray-200 p-1 rounded">config.json</code> file.</p>
+            <p class="mb-4">The server implements rate limiting to prevent abuse. By default, the server allows up to 10 requests per minute per client. This can be configured in the <code class="bg-gray-200 p-1 rounded">config.json</code> file. Rate limiting helps protect the server from being overwhelmed by too many requests.</p>
         </section>
 
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-6 text-center">HTTPS Support</h2>
-            <p class="mb-4">The server supports HTTPS with automatic self-signed certificate generation. To enable HTTPS, set <code class="bg-gray-200 p-1 rounded">"use_https": true</code> in the <code class="bg-gray-200 p-1 rounded">config.json</code> file. The server will generate a self-signed certificate and key if they do not already exist.</p>
+            <p class="mb-4">The server supports HTTPS with automatic self-signed certificate generation. To enable HTTPS, set <code class="bg-gray-200 p-1 rounded">"use_https": true</code> in the <code class="bg-gray-200 p-1 rounded">config.json</code> file. The server will generate a self-signed certificate and key if they do not already exist. HTTPS ensures secure communication between the client and server.</p>
         </section>
 
         <section class="mb-12">
@@ -162,15 +192,21 @@
     "log_file": "server.log",
     "whitelist": [],
     "blacklist": [],
+    "htdocs_dir": "htdocs",
+    "downloads_dir": "htdocs/downloads",
     "cert_config": {
-        "C": "US",
-        "ST": "California",
-        "L": "San Francisco",
-        "O": "My Company",
-        "OU": "My Organization",
-        "CN": "localhost",
+        "key_size": 2048,
+        "subject": {
+            "C": "US",
+            "ST": "California",
+            "L": "San Francisco",
+            "O": "My Company",
+            "OU": "My Organization",
+            "CN": "localhost"
+        },
         "serial_number": 1000,
-        "valid_days": 3650
+        "valid_days": 3650,
+        "signing_algorithm": "sha256"
     }
 }
             </pre>
@@ -179,7 +215,7 @@
 
     <footer class="bg-gray-800 text-white p-6 mt-12">
         <div class="container mx-auto text-center">
-            <p>&copy; 2023 Kynlo. All rights reserved.</p>
+            <p>&copy; 2024 Kynlo. All rights reserved.</p>
         </div>
     </footer>
 </body>
