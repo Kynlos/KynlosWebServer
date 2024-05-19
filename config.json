@@ -8,14 +8,20 @@
   "log_file": "server.log",
   "whitelist": [],
   "blacklist": [],
+  "htdocs_dir": "htdocs",
+  "downloads_dir": "htdocs/downloads",
   "cert_config": {
-    "C": "US",
-    "ST": "California",
-    "L": "San Francisco",
-    "O": "My Company",
-    "OU": "My Organization",
-    "CN": "localhost",
+    "key_size": 2048,
+    "subject": {
+      "C": "US",
+      "ST": "California",
+      "L": "San Francisco",
+      "O": "My Company",
+      "OU": "My Organization",
+      "CN": "localhost"
+    },
     "serial_number": 1000,
-    "valid_days": 3650
+    "valid_days": 3650,
+    "signing_algorithm": "sha256"
   }
 }

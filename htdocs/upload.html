@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .upload-box {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        .upload-header {
+            background-color: #1a202c;
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .upload-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .upload-input {
+            padding: 1.5rem;
+            background-color: #f1f1f1;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .drop-zone.dragover {
+            background-color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-box">
+            <div class="upload-header">
+                File Upload
+            </div>
+            <div class="upload-body">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="file-input" class="block text-gray-700 font-semibold mb-2">Select a file:</label>
+                        <input type="file" id="file-input" name="file" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="drop-zone" id="drop-zone">
+                        Drag & Drop your file here
+                    </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">Upload</button>
+                </form>
+            </div>
+            <div class="upload-input">
+                <div id="upload-status" class="text-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadForm = document.getElementById('upload-form');
+        const uploadStatus = document.getElementById('upload-status');
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        uploadForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(uploadForm);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                uploadStatus.textContent = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                uploadStatus.textContent = 'Oops! Something went wrong. Please try again.';
+            });
+        });
+
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('dragover');
+
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                uploadForm.dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

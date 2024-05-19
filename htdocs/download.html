@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Download</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .download-box {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        .download-header {
+            background-color: #1a202c;
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .download-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .download-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .download-item:last-child {
+            border-bottom: none;
+        }
+        .download-link {
+            color: #3182ce;
+            text-decoration: none;
+        }
+        .download-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="download-box">
+            <div class="download-header">
+                File Download
+            </div>
+            <div class="download-body" id="download-list">
+                <!-- File list will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/list-downloads')
+                .then(response => response.json())
+                .then(data => {
+                    const downloadList = document.getElementById('download-list');
+                    data.files.forEach(file => {
+                        const item = document.createElement('div');
+                        item.className = 'download-item';
+                        item.innerHTML = `
+                            <span>${file}</span>
+                            <a href="/downloads/${file}" class="download-link" download="${file}">Download</a>
+                        `;
+                        downloadList.appendChild(item);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>

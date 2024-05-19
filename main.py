@@ -15,6 +15,8 @@ from time import time
 from collections import defaultdict
 from OpenSSL import crypto
 from http import HTTPStatus
+from concurrent.futures import ThreadPoolExecutor
+import mimetypes
 
 # Load configuration from config file
 def load_config(config_file='config.json'):
@@ -41,6 +43,10 @@ BLACKLIST = config.get('blacklist', [])
 
 # Static file caching
 CACHE = {}
+
+# Directories
+HTDOCS_DIR = config.get('htdocs_dir', 'htdocs')
+DOWNLOADS_DIR = config.get('downloads_dir', os.path.join(HTDOCS_DIR, 'downloads'))
 
 def rate_limited(func):
     @wraps(func)
@@ -76,14 +82,17 @@ def ip_allowed(func):
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         self.entry_point = kwargs.pop('entry_point', 'index.html')
-        super().__init__(*args, **kwargs)
+        self.executor = kwargs.pop('executor', None)
+        super().__init__(*args, directory=HTDOCS_DIR, **kwargs)
 
     @ip_allowed
     def do_GET(self):
         if self.path == '/':
             self.path = '/' + self.entry_point
-        if self.path.endswith('.php'):
-            self.handle_php()
+        elif self.path == '/list-downloads':
+            self.list_downloads()
+        elif self.path.startswith('/downloads/'):
+            self.serve_download()
         else:
             self.serve_static_file()
 
@@ -102,18 +111,18 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(404, "File not found")
                 return
 
-            process = subprocess.Popen(['php', php_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
+            future = self.executor.submit(subprocess.run, ['php', php_file_path], capture_output=True)
+            process = future.result()
 
             if process.returncode != 0:
                 self.send_error(500, "PHP execution failed")
-                logging.error(f"PHP execution failed: {stderr.decode()}")
+                logging.error(f"PHP execution failed: {process.stderr.decode()}")
                 return
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            self.wfile.write(stdout)
+            self.wfile.write(process.stdout)
         except Exception as e:
             self.send_error(500, "Internal server error")
             logging.error(f"Exception while handling PHP file: {e}")
@@ -130,7 +139,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 headers, content = part.split(b'\r\n\r\n', 1)
                 headers = headers.decode()
                 filename = headers.split('filename="')[1].split('"')[0]
-                filepath = os.path.join(os.getcwd(), filename)
+                filepath = os.path.join(DOWNLOADS_DIR, filename)
                 with open(filepath, 'wb') as f:
                     f.write(content.rstrip(b'\r\n--'))
 
@@ -150,6 +159,34 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(CACHE[self.path]['content'])
         else:
             super().do_GET()
+
+    def list_downloads(self):
+        try:
+            files = os.listdir(DOWNLOADS_DIR)
+            files = [f for f in files if os.path.isfile(os.path.join(DOWNLOADS_DIR, f))]
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            response = json.dumps({"files": files})
+            self.wfile.write(response.encode())
+        except Exception as e:
+            self.send_error(500, "Internal server error")
+            logging.error(f"Exception while listing downloads: {e}")
+
+    def serve_download(self):
+        file_path = self.path.lstrip('/')
+        full_path = os.path.join(HTDOCS_DIR, file_path)
+        if os.path.exists(full_path) and os.path.isfile(full_path):
+            mime_type, _ = mimetypes.guess_type(full_path)
+            self.send_response(200)
+            self.send_header("Content-Type", mime_type or "application/octet-stream")
+            self.send_header("Content-Disposition", f'attachment; filename="{os.path.basename(full_path)}"')
+            self.send_header("Content-Length", str(os.path.getsize(full_path)))
+            self.end_headers()
+            with open(full_path, 'rb') as f:
+                self.wfile.write(f.read())
+        else:
+            self.send_error(404, "File not found")
 
     def list_directory(self, path):
         try:
@@ -212,23 +249,19 @@ def generate_self_signed_cert(certfile, keyfile, cert_config):
 
         # Create a key pair
         key = crypto.PKey()
-        key.generate_key(crypto.TYPE_RSA, 2048)
+        key.generate_key(crypto.TYPE_RSA, cert_config.get('key_size', 2048))
 
         # Create a self-signed cert
         cert = crypto.X509()
         subject = cert.get_subject()
-        subject.C = cert_config.get('C', "US")
-        subject.ST = cert_config.get('ST', "California")
-        subject.L = cert_config.get('L', "San Francisco")
-        subject.O = cert_config.get('O', "My Company")
-        subject.OU = cert_config.get('OU', "My Organization")
-        subject.CN = cert_config.get('CN', "localhost")
+        for key, value in cert_config.get('subject', {}).items():
+            setattr(subject, key, value)
         cert.set_serial_number(cert_config.get('serial_number', 1000))
         cert.gmtime_adj_notBefore(0)
         cert.gmtime_adj_notAfter(cert_config.get('valid_days', 3650) * 24 * 60 * 60)
         cert.set_issuer(subject)
         cert.set_pubkey(key)
-        cert.sign(key, 'sha256')
+        cert.sign(key, cert_config.get('signing_algorithm', 'sha256'))
 
         with open(certfile, "wb") as f:
             f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
@@ -250,24 +283,25 @@ def run_server():
         if use_https:
             generate_self_signed_cert(certfile, keyfile, cert_config)
 
-        handler = lambda *args, **kwargs: CustomHTTPRequestHandler(*args, entry_point=entry_point, **kwargs)
-        with socketserver.TCPServer(("", port), handler) as httpd:
-            if use_https:
-                httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certfile, keyfile=keyfile, server_side=True)
-                logging.info(f"Serving on port {port} with HTTPS")
-                webbrowser.open(f'https://localhost:{port}/{entry_point}')
-            else:
-                logging.info(f"Serving on port {port}")
-                webbrowser.open(f'http://localhost:{port}/{entry_point}')
+        with ThreadPoolExecutor() as executor:
+            handler = lambda *args, **kwargs: CustomHTTPRequestHandler(*args, entry_point=entry_point, executor=executor, **kwargs)
+            with socketserver.ThreadingTCPServer(("", port), handler) as httpd:
+                if use_https:
+                    httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certfile, keyfile=keyfile, server_side=True)
+                    logging.info(f"Serving on port {port} with HTTPS")
+                    webbrowser.open(f'https://localhost:{port}/{entry_point}')
+                else:
+                    logging.info(f"Serving on port {port}")
+                    webbrowser.open(f'http://localhost:{port}/{entry_point}')
 
-            # Handle graceful shutdown on Ctrl-C
-            def signal_handler(sig, frame):
-                logging.info('Shutting down server...')
-                httpd.shutdown()
-                sys.exit(0)
+                # Handle graceful shutdown on Ctrl-C
+                def signal_handler(sig, frame):
+                    logging.info('Shutting down server...')
+                    httpd.shutdown()
+                    sys.exit(0)
 
-            signal.signal(signal.SIGINT, signal_handler)
-            httpd.serve_forever()
+                signal.signal(signal.SIGINT, signal_handler)
+                httpd.serve_forever()
     except Exception as e:
         logging.error(f"Failed to start server: {e}")
 
