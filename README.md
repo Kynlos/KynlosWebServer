@@ -1,6 +1,6 @@
 # Kynlos Python Web Server with PHP Support
 
-This is a Python-based web server that supports serving static files, executing PHP scripts, file uploads, rate limiting, IP whitelisting/blacklisting, HTTPS using self-signed certificates, CORS support, custom error pages, static file caching, Gzip/Brotli compression, basic authentication, and virtual hosts. The server is highly configurable via a `config.json` file.
+This is a Python-based web server that supports serving static files, executing PHP scripts, file uploads, rate limiting, IP whitelisting/blacklisting, HTTPS using self-signed certificates, CORS support, custom error pages, static file caching, Gzip/Brotli compression, basic authentication, virtual hosts, URL redirects, graceful shutdown, browser auto-open, email verification, and SQLite database integration for user management. The server is highly configurable via a `config.json` file.
 
 ## Features
 
@@ -17,16 +17,20 @@ This is a Python-based web server that supports serving static files, executing 
 - Gzip and Brotli compression for improved transfer speeds
 - Basic authentication with configurable authorized users
 - Virtual hosts support for hosting multiple websites or domains
+- URL redirects for redirecting users from old or outdated URLs to new ones or external websites
 - Customizable entry point (default: `index.html`)
 - Logging of requests to a log file
 - Graceful shutdown on Ctrl-C
 - Opens the entry point in a web browser on server start
+- Email verification for new user registrations to prevent spam accounts
+- SQLite database integration for managing user accounts and enabling user registration and login
 
 ## Requirements
 
 - Python 3.x
 - `php` command available in PATH (for PHP script execution)
 - `OpenSSL` Python library (for HTTPS support)
+- `sqlite3` Python library (for SQLite database integration)
 
 ## Configuration
 
@@ -67,6 +71,15 @@ The server can be configured using a `config.json` file in the same directory as
 - `virtual_hosts`: A dictionary of virtual host mappings, with each key representing a domain and the value specifying the `htdocs_dir` and `entry_point` for that domain
 - `enable_custom_error_pages`: Whether to enable custom error pages (default: `false`)
 - `error_pages`: A dictionary mapping HTTP error codes to custom HTML pages
+- `redirects`: A dictionary of URL redirects, with each key representing the old URL and the value specifying the new URL or external website
+- `enable_email_verification`: Whether to enable email verification for new user registrations (default: `false`)
+- `smtp_config`: Configuration options for sending verification emails via SMTP
+  - `host`: SMTP server hostname
+  - `port`: SMTP server port
+  - `username`: SMTP username
+  - `password`: SMTP password
+  - `use_tls`: Whether to use TLS encryption (default: `true`)
+  - `from_email`: The email address to send verification emails from
 
 ## Usage
 
@@ -76,6 +89,7 @@ The server can be configured using a `config.json` file in the same directory as
 4. Run the server using `python main.py`.
 5. Access the server in a web browser at `http://localhost` (or the configured port).
 6. Upload files via the `/upload` endpoint and access them from the `htdocs/download.html` page.
+7. Register new user accounts and verify email addresses to enable user-specific features.
 
 ## Contributing
 

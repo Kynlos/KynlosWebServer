@@ -1,3 +1,6 @@
 
 server.log
 *.log
+server.db
+server.log
+*.log

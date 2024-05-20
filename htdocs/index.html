@@ -90,16 +90,14 @@
                     </div>
                 </div>
 
-                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Rate Limiting</h3>
-                        <p>Implements rate limiting to prevent abuse, configurable to allow a specific number of requests per minute per client.  You can configure rate limiting, including burst limits, in the <code>config.json</code> file.</p>
+                        <p>Implements rate limiting to prevent abuse, configurable to allow a specific number of requests per minute per client. You can configure rate limiting, including burst limits, in the <code>config.json</code> file.</p>
                     </div>
                 </div>
 
-                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -116,7 +114,6 @@
                     </div>
                 </div>
 
-                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -125,7 +122,6 @@
                     </div>
                 </div>
 
-                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -134,7 +130,6 @@
                     </div>
                 </div>
 
-                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -143,7 +138,6 @@
                     </div>
                 </div>
 
-                <!-- New Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -152,7 +146,6 @@
                     </div>
                 </div>
 
-                <!-- New Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -161,12 +154,19 @@
                     </div>
                 </div>
 
-                <!-- New Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Virtual Hosts</h3>
                         <p>Host multiple websites or domains on a single server using virtual hosts. Define your virtual host mappings in <code>config.json</code> to route requests accordingly.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">URL Redirects</h3>
+                        <p>Easily redirect users from old or outdated URLs to new ones, or to external websites, using the <code>config.json</code> file.</p>
                     </div>
                 </div>
 
@@ -182,6 +182,20 @@
                     <div>
                         <h3 class="text-xl font-bold">Browser Auto-Open</h3>
                         <p>Automatically opens the entry point in a web browser on server start, providing a convenient user experience.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">Email Verification</h3>
+                        <p>Provides email verification for new user registrations, adding an extra layer of security and preventing spam accounts.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">SQLite Database Integration</h3>
+                        <p>Uses an SQLite database to manage user accounts, enabling features like user registration and login.</p>
                     </div>
                 </div>
             </div>
@@ -207,96 +221,9 @@
             <p class="mb-4">You can download files that have been uploaded to the server from the specified download directory. Access the files via the <code class="bg-gray-200 p-1 rounded">/downloads</code> endpoint. This feature provides a simple way to retrieve files stored on the server.</p>
         </section>
 
-        <!-- Removed other individual feature sections, as they are now in the main Features grid -->
-
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-6 text-center">Configuration</h2>
-            <p class="mb-4">The server reads configuration from a <code class="bg-gray-200 p-1 rounded">config.json</code> file. Here is an example configuration:</p>
-            <pre class="bg-gray-200 p-6 rounded-lg shadow-md">
-                {
-                    "server_features": {
-                      "use_https": false,
-                      "enable_rate_limiting": true,
-                      "enable_ip_filtering": false,
-                      "enable_static_file_cache": true,
-                      "enable_gzip_compression": true,
-                      "enable_brotli_compression": true,
-                      "enable_basic_auth": false,
-                      "enable_virtual_hosts": false,
-                      "enable_custom_error_pages": false
-                    }, 
-                  
-                    "server_config": {
-                      "port": 8080,
-                      "entry_point": "index.html",
-                      "htdocs_dir": "htdocs",
-                      "downloads_dir": "htdocs/downloads",
-                      "log_file": "server.log"
-                    },
-                  
-                    "https_config": {
-                      "certfile": "cert.pem",
-                      "keyfile": "key.pem",
-                      "cert_renewal_days": 30,
-                      "cert_config": {
-                        "key_size": 2048,
-                        "subject": {
-                          "C": "US",
-                          "ST": "California",
-                          "L": "San Francisco",
-                          "O": "My Company",
-                          "OU": "My Organization",
-                          "CN": "localhost"
-                        },
-                        "serial_number": 1000,
-                        "valid_days": 3650,
-                        "signing_algorithm": "sha256"
-                      }
-                    },
-                  
-                    "rate_limiting_config": {
-                      "rate_limit": 10,
-                      "rate_limit_burst": 5
-                    },
-                  
-                    "ip_filtering_config": {
-                      "whitelist": [],
-                      "blacklist": []
-                    },
-                  
-                    "caching_config": {
-                      "cache_max_size": 10485760, 
-                      "cache_ttl": 60
-                    },
-                  
-                    "basic_auth_config": {
-                      "auth_users": {
-                        "username": "password" 
-                      }
-                    },
-                  
-                    "virtual_hosts_config": {
-                      "virtual_hosts": {
-                        "mydomain.com": {
-                          "htdocs_dir": "htdocs/mydomain",
-                          "entry_point": "home.html"
-                        },
-                        "api.mydomain.com": {
-                          "htdocs_dir": "htdocs/api",
-                          "entry_point": "index.php"
-                        }
-                      }
-                    },
-                  
-                    "error_pages_config": {
-                      "error_pages": {
-                        "404": "error_pages/404.html",
-                        "500": "error_pages/500.html" 
-                      }
-                    }
-                  }
-                  
-            </pre>
+            <p class="mb-4">The server reads configuration from a <code class="bg-gray-200 p-1 rounded">config.json</code> file. You can customize various aspects of the server's behavior, including security settings, performance optimization, and more.</p>
         </section>
     </main>
 

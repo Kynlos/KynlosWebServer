@@ -21,6 +21,13 @@ import datetime
 import gzip
 import brotli
 from cert import generate_self_signed_cert, check_cert_expiry, start_cert_renewal_timer
+import sqlite3
+from passlib.hash import bcrypt  # for password hashing
+import secrets
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import smtplib
+import re
 
 # Load configuration from config file
 def load_config(config_file='config.json'):
@@ -89,6 +96,38 @@ ERROR_PAGES = config.get('error_pages_config', {}).get('error_pages', {})
 # URL Redirection
 ENABLE_URL_REDIRECTS = config.get('server_features', {}).get('enable_url_redirects', False)
 URL_REDIRECTS = config.get('url_redirects_config', {}).get('url_redirects', {})
+
+# ---------------------- DATABASE SETUP ----------------------
+DB_FILE = config.get('database_config', {}).get('db_file', 'server.db')
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            verified INTEGER DEFAULT 0 
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+# Initialize database
+init_db()
+
+# ---------------------- EMAIL CONFIGURATION ----------------------
+ENABLE_EMAIL_VERIFICATION = config.get('email_config', {}).get('enable_email_verification', False)
+EMAIL_HOST = config.get('email_config', {}).get('email_host', 'smtp.example.com')
+EMAIL_PORT = config.get('email_config', {}).get('email_port', 587)
+EMAIL_USER = config.get('email_config', {}).get('email_user', 'your_email@example.com')
+EMAIL_PASSWORD = config.get('email_config', {}).get('email_password', 'your_password')
+EMAIL_FROM = config.get('email_config', {}).get('email_from', 'your_email@example.com')
+SITE_URL = config.get('email_config', {}).get('site_url', 'http://localhost:8080')  # Used for verification links
 
 # ---------------------- DECORATORS ----------------------
 
@@ -185,6 +224,11 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 return
 
+        # Handle verification
+        if self.path.startswith('/verify?token='):
+            self.verify_email(self.path.split('=')[1])
+            return
+
         if self.path == '/':
             self.path = '/' + self.entry_point
         elif self.path == '/list-downloads':
@@ -200,6 +244,8 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/upload':
             self.handle_file_upload()
+        elif self.path == '/register':
+            self.handle_registration()
         else:
             self.send_error(404, "File not found")
 
@@ -247,6 +293,120 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         response = BytesIO()
         response.write(b"File uploaded successfully")
         self.wfile.write(response.getvalue())
+    
+    def handle_registration(self):
+        content_length = int(self.headers['Content-Length'])
+        body = self.rfile.read(content_length).decode('utf-8')
+        data = parse_qs(body)
+
+        username = data.get('username', [''])[0]
+        password = data.get('password', [''])[0]
+        email = data.get('email', [''])[0]
+
+        # Basic Validation (You should enhance this)
+        if not all([username, password, email]):
+            self.send_error(400, "Missing username, password or email.")
+            return
+
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            self.send_error(400, "Invalid email address.")
+            return
+
+        try:
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+            user_exists = cursor.fetchone()
+            if user_exists:
+                self.send_error(400, "Username already exists.")
+                return
+
+            cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
+            email_exists = cursor.fetchone()
+            if email_exists:
+                self.send_error(400, "Email already exists.")
+                return
+
+            # Hash the password
+            hashed_password = bcrypt.hash(password)
+
+            cursor.execute("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", 
+                            (username, hashed_password, email))
+            conn.commit()
+            conn.close()
+
+            if ENABLE_EMAIL_VERIFICATION:
+                self.send_verification_email(username, email)
+
+            self.send_response(201, "User registered successfully.")
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+
+        except Exception as e:
+            self.send_error(500, f"Registration failed: {e}")
+
+    def send_verification_email(self, username, email):
+        if ENABLE_EMAIL_VERIFICATION:
+            token = secrets.token_urlsafe(20)
+
+            try:
+                conn = sqlite3.connect(DB_FILE)
+                cursor = conn.cursor()
+                cursor.execute("UPDATE users SET verification_token = ? WHERE username = ?", (token, username))
+                conn.commit()
+                conn.close()
+
+                verification_link = f"{SITE_URL}/verify?token={token}"
+                msg = MIMEMultipart()
+                msg['Subject'] = "Verify your email address"
+                msg['From'] = EMAIL_FROM
+                msg['To'] = email
+
+                html = f"""
+                <html>
+                <head></head>
+                <body>
+                    <p>Hello {username},</p>
+                    <p>Please click the link below to verify your email address:</p>
+                    <p><a href="{verification_link}">{verification_link}</a></p>
+                </body>
+                </html>
+                """
+                part1 = MIMEText(html, 'html')
+                msg.attach(part1)
+
+                with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:
+                    server.starttls()
+                    server.login(EMAIL_USER, EMAIL_PASSWORD)
+                    server.sendmail(EMAIL_FROM, email, msg.as_string())
+
+                logging.info(f"Verification email sent to {email}")
+            except Exception as e:
+                logging.error(f"Failed to send verification email: {e}")
+                self.send_error(500, "Failed to send verification email.")
+
+    def verify_email(self, token):
+        try:
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            cursor.execute("SELECT username FROM users WHERE verification_token = ?", (token,))
+            user = cursor.fetchone()
+            if user:
+                username = user[0]
+                cursor.execute("UPDATE users SET verified = 1, verification_token = NULL WHERE username = ?", (username,))
+                conn.commit()
+                conn.close()
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(b"Email verified successfully!")
+            else:
+                conn.close()
+                self.send_error(400, "Invalid or expired token.")
+        except Exception as e:
+            logging.error(f"Failed to verify email: {e}")
+            self.send_error(500, "Failed to verify email.")
 
     def serve_static_file(self):
         file_path = self.translate_path(self.path)

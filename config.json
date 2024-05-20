@@ -1,7 +1,7 @@
 {
   "server_features": {
     "use_https": false,
-    "enable_rate_limiting": false,
+    "enable_rate_limiting": true,
     "enable_ip_filtering": false,
     "enable_static_file_cache": true,
     "enable_gzip_compression": true,
@@ -9,30 +9,31 @@
     "enable_basic_auth": false,
     "enable_virtual_hosts": false,
     "enable_custom_error_pages": false,
-    "enable_url_redirects": true
+    "enable_url_redirects": true,
+    "enable_email_verification": false
   }, 
 
   "server_config": {
-    "port": 80,
-    "entry_point": "index.html",
-    "htdocs_dir": "htdocs",
-    "downloads_dir": "htdocs/downloads",
-    "log_file": "server.log"
+    "port": 8080,
+    "entry_point": "index.html", 
+    "htdocs_dir": "htdocs", 
+    "downloads_dir": "htdocs/downloads", 
+    "log_file": "server.log" 
   },
 
   "https_config": {
     "certfile": "cert.pem",
-    "keyfile": "key.pem",
-    "cert_renewal_days": 30,
+    "keyfile": "key.pem", 
+    "cert_renewal_days": 30, 
     "cert_config": {
       "key_size": 2048,
       "subject": {
-        "C": "US",
+        "C": "US", 
         "ST": "California",
-        "L": "San Francisco",
-        "O": "My Company",
-        "OU": "My Organization",
-        "CN": "localhost"
+        "L": "San Francisco", 
+        "O": "My Company", 
+        "OU": "My Organization", 
+        "CN": "localhost" 
       },
       "serial_number": 1000,
       "valid_days": 3650,
@@ -41,50 +42,51 @@
   },
 
   "rate_limiting_config": {
-    "rate_limit": 10,
-    "rate_limit_burst": 5
+    "rate_limit": 10, 
+    "rate_limit_burst": 5 
   },
 
   "ip_filtering_config": {
-    "whitelist": [],
-    "blacklist": []
+    "whitelist": [], 
+    "blacklist": []  
   },
 
   "caching_config": {
     "cache_max_size": 10485760, 
-    "cache_ttl": 60
+    "cache_ttl": 60 
   },
 
   "basic_auth_config": {
     "auth_users": {
-      "username": "password" 
     }
   },
 
   "virtual_hosts_config": {
     "virtual_hosts": {
-      "mydomain.com": {
-        "htdocs_dir": "htdocs/mydomain",
-        "entry_point": "home.html"
-      },
-      "api.mydomain.com": {
-        "htdocs_dir": "htdocs/api",
-        "entry_point": "index.php"
-      }
     }
   },
 
   "error_pages_config": {
     "error_pages": {
-      "404": "error_pages/404.html",
-      "500": "error_pages/500.html" 
     }
   },
 
   "url_redirects_config": {
     "url_redirects": {
-      "/old-page": "/new-page",
-      "/blog": "https://blog.mydomain.com"
     }
+  },
+
+  "database_config": {
+    "db_file": "server.db" 
+  },
+
+  "email_config": {
+    "enable_email_verification": false,
+    "email_host": "smtp.example.com", 
+    "email_port": 587,
+    "email_user": "your_email@example.com",
+    "email_password": "your_password",
+    "email_from": "your_email@example.com",
+    "site_url": "http://localhost:8080" 
   }
 }
