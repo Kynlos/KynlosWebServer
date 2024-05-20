@@ -1,6 +1,6 @@
 # Kynlos Python Web Server with PHP Support
 
-This is a Python-based web server that supports serving static files, executing PHP scripts, file uploads, rate limiting, IP whitelisting/blacklisting, HTTPS using self-signed certificates, CORS support, custom error pages, and static file caching. The server is highly configurable via a `config.json` file.
+This is a Python-based web server that supports serving static files, executing PHP scripts, file uploads, rate limiting, IP whitelisting/blacklisting, HTTPS using self-signed certificates, CORS support, custom error pages, static file caching, Gzip/Brotli compression, basic authentication, and virtual hosts. The server is highly configurable via a `config.json` file.
 
 ## Features
 
@@ -8,12 +8,15 @@ This is a Python-based web server that supports serving static files, executing 
 - Executes PHP scripts using the `php` command
 - Supports file uploads via POST requests to `/upload`, with uploaded files saved in the `htdocs/downloads` directory
 - Provides a file download page at `htdocs/download.html` for accessing uploaded files
-- Rate limiting to prevent abuse (configurable requests per minute)
+- Rate limiting to prevent abuse (configurable requests per minute and burst limits)
 - IP whitelisting and blacklisting for access control
-- HTTPS support using self-signed certificates
+- HTTPS support using self-signed certificates with configurable certificate details and renewal options
 - Cross-Origin Resource Sharing (CORS) support
-- Serves custom HTML pages for different HTTP error codes
-- Implements caching for static files to improve performance
+- Serves custom HTML pages for different HTTP error codes (configurable via `config.json`)
+- Implements caching for static files to improve performance (configurable cache size and TTL)
+- Gzip and Brotli compression for improved transfer speeds
+- Basic authentication with configurable authorized users
+- Virtual hosts support for hosting multiple websites or domains
 - Customizable entry point (default: `index.html`)
 - Logging of requests to a log file
 - Graceful shutdown on Ctrl-C
@@ -35,6 +38,7 @@ The server can be configured using a `config.json` file in the same directory as
 - `certfile`: The path to the certificate file for HTTPS (default: `cert.pem`)
 - `keyfile`: The path to the private key file for HTTPS (default: `key.pem`)
 - `rate_limit`: The maximum number of requests per minute per IP (default: `10`)
+- `rate_limit_burst`: The maximum number of burst requests allowed (default: `5`)
 - `log_file`: The path to the log file for request logging (default: `server.log`)
 - `whitelist`: A list of IP addresses that are allowed to access the server (default: `[]`)
 - `blacklist`: A list of IP addresses that are blocked from accessing the server (default: `[]`)
@@ -52,6 +56,17 @@ The server can be configured using a `config.json` file in the same directory as
   - `serial_number`: Serial number (default: `1000`)
   - `valid_days`: Number of days the certificate is valid for (default: `3650`)
   - `signing_algorithm`: The signing algorithm to use (default: `sha256`)
+- `cert_renewal_days`: The number of days before certificate expiration to renew (default: `30`)
+- `cache_max_size`: The maximum size of the static file cache in bytes (default: `10485760`)
+- `cache_ttl`: The time-to-live (TTL) for cached files in seconds (default: `60`)
+- `enable_gzip_compression`: Whether to enable Gzip compression (default: `true`)
+- `enable_brotli_compression`: Whether to enable Brotli compression (default: `true`)
+- `enable_basic_auth`: Whether to enable basic authentication (default: `false`)
+- `auth_users`: A dictionary of authorized usernames and passwords for basic authentication
+- `enable_virtual_hosts`: Whether to enable virtual hosts support (default: `false`)
+- `virtual_hosts`: A dictionary of virtual host mappings, with each key representing a domain and the value specifying the `htdocs_dir` and `entry_point` for that domain
+- `enable_custom_error_pages`: Whether to enable custom error pages (default: `false`)
+- `error_pages`: A dictionary mapping HTTP error codes to custom HTML pages
 
 ## Usage
 
