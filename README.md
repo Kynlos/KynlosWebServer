@@ -1,3 +1,5 @@
+![Features](https://github.com/Kynlos/KynlosWebServer/blob/main/features.png)
+
 # Kynlos Python Web Server with PHP Support
 
 This is a Python-based web server that supports serving static files, executing PHP scripts, file uploads, rate limiting, IP whitelisting/blacklisting, HTTPS using self-signed certificates, CORS support, custom error pages, static file caching, Gzip/Brotli compression, basic authentication, virtual hosts, URL redirects, graceful shutdown, browser auto-open, email verification, and SQLite database integration for user management. The server is highly configurable via a `config.json` file.
