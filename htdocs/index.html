@@ -89,20 +89,25 @@
                         <p>Supports file uploads via POST requests to <code>/upload</code>, with uploaded files saved in the specified directory.</p>
                     </div>
                 </div>
+
+                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Rate Limiting</h3>
-                        <p>Implements rate limiting to prevent abuse, configurable to allow a specific number of requests per minute per client.</p>
+                        <p>Implements rate limiting to prevent abuse, configurable to allow a specific number of requests per minute per client.  You can configure rate limiting, including burst limits, in the <code>config.json</code> file.</p>
                     </div>
                 </div>
+
+                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">HTTPS Support</h3>
-                        <p>Supports HTTPS with automatic self-signed certificate generation, enhancing security for your web server.</p>
+                        <p>Supports HTTPS with automatic self-signed certificate generation, enhancing security for your web server. Configure HTTPS settings, including certificate details and renewal options in <code>config.json</code>.</p>
                     </div>
                 </div>
+
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -110,27 +115,61 @@
                         <p>Enables Cross-Origin Resource Sharing (CORS), allowing your server to handle requests from different origins.</p>
                     </div>
                 </div>
+
+                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">IP Whitelisting/Blacklisting</h3>
-                        <p>Allows or blocks access based on client IP addresses, providing an additional layer of security.</p>
+                        <p>Allows or blocks access based on client IP addresses, providing an additional layer of security. Manage whitelisted and blacklisted IP addresses via the <code>config.json</code> file.</p>
                     </div>
                 </div>
+
+                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Custom Error Pages</h3>
-                        <p>Serves custom HTML pages for different HTTP error codes, improving the user experience during errors.</p>
+                        <p>Serves custom HTML pages for different HTTP error codes, improving the user experience during errors. Configure your custom error pages in the <code>config.json</code> file.</p>
                     </div>
                 </div>
+
+                <!-- New/Updated Feature -->
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
                         <h3 class="text-xl font-bold">Static File Caching</h3>
-                        <p>Implements caching for static files to improve performance and reduce server load.</p>
+                        <p>Implements caching for static files to improve performance and reduce server load. You can configure caching behavior, including cache size and TTL (time-to-live), in <code>config.json</code>.</p>
                     </div>
                 </div>
+
+                <!-- New Feature -->
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">Gzip/Brotli Compression</h3>
+                        <p>The server can automatically compress files using Gzip or Brotli to reduce file sizes and improve transfer speeds, leading to faster page loads.</p>
+                    </div>
+                </div>
+
+                <!-- New Feature -->
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">Basic Authentication</h3>
+                        <p>Secure your server by enabling basic authentication and defining authorized usernames and passwords in the <code>config.json</code> file.</p>
+                    </div>
+                </div>
+
+                <!-- New Feature -->
+                <div class="flex items-start">
+                    <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
+                    <div>
+                        <h3 class="text-xl font-bold">Virtual Hosts</h3>
+                        <p>Host multiple websites or domains on a single server using virtual hosts. Define your virtual host mappings in <code>config.json</code> to route requests accordingly.</p>
+                    </div>
+                </div>
+
                 <div class="flex items-start">
                     <span class="material-icons text-blue-500 mr-4 feature-icon">check_circle</span>
                     <div>
@@ -168,47 +207,95 @@
             <p class="mb-4">You can download files that have been uploaded to the server from the specified download directory. Access the files via the <code class="bg-gray-200 p-1 rounded">/downloads</code> endpoint. This feature provides a simple way to retrieve files stored on the server.</p>
         </section>
 
-        <section class="mb-12">
-            <h2 class="text-3xl font-bold mb-6 text-center">Rate Limiting</h2>
-            <p class="mb-4">The server implements rate limiting to prevent abuse. By default, the server allows up to 10 requests per minute per client. This can be configured in the <code class="bg-gray-200 p-1 rounded">config.json</code> file. Rate limiting helps protect the server from being overwhelmed by too many requests.</p>
-        </section>
-
-        <section class="mb-12">
-            <h2 class="text-3xl font-bold mb-6 text-center">HTTPS Support</h2>
-            <p class="mb-4">The server supports HTTPS with automatic self-signed certificate generation. To enable HTTPS, set <code class="bg-gray-200 p-1 rounded">"use_https": true</code> in the <code class="bg-gray-200 p-1 rounded">config.json</code> file. The server will generate a self-signed certificate and key if they do not already exist. HTTPS ensures secure communication between the client and server.</p>
-        </section>
+        <!-- Removed other individual feature sections, as they are now in the main Features grid -->
 
         <section class="mb-12">
             <h2 class="text-3xl font-bold mb-6 text-center">Configuration</h2>
             <p class="mb-4">The server reads configuration from a <code class="bg-gray-200 p-1 rounded">config.json</code> file. Here is an example configuration:</p>
             <pre class="bg-gray-200 p-6 rounded-lg shadow-md">
-{
-    "port": 8080,
-    "entry_point": "index.html",
-    "use_https": false,
-    "certfile": "cert.pem",
-    "keyfile": "key.pem",
-    "rate_limit": 10,
-    "log_file": "server.log",
-    "whitelist": [],
-    "blacklist": [],
-    "htdocs_dir": "htdocs",
-    "downloads_dir": "htdocs/downloads",
-    "cert_config": {
-        "key_size": 2048,
-        "subject": {
-            "C": "US",
-            "ST": "California",
-            "L": "San Francisco",
-            "O": "My Company",
-            "OU": "My Organization",
-            "CN": "localhost"
-        },
-        "serial_number": 1000,
-        "valid_days": 3650,
-        "signing_algorithm": "sha256"
-    }
-}
+                {
+                    "server_features": {
+                      "use_https": false,
+                      "enable_rate_limiting": true,
+                      "enable_ip_filtering": false,
+                      "enable_static_file_cache": true,
+                      "enable_gzip_compression": true,
+                      "enable_brotli_compression": true,
+                      "enable_basic_auth": false,
+                      "enable_virtual_hosts": false,
+                      "enable_custom_error_pages": false
+                    }, 
+                  
+                    "server_config": {
+                      "port": 8080,
+                      "entry_point": "index.html",
+                      "htdocs_dir": "htdocs",
+                      "downloads_dir": "htdocs/downloads",
+                      "log_file": "server.log"
+                    },
+                  
+                    "https_config": {
+                      "certfile": "cert.pem",
+                      "keyfile": "key.pem",
+                      "cert_renewal_days": 30,
+                      "cert_config": {
+                        "key_size": 2048,
+                        "subject": {
+                          "C": "US",
+                          "ST": "California",
+                          "L": "San Francisco",
+                          "O": "My Company",
+                          "OU": "My Organization",
+                          "CN": "localhost"
+                        },
+                        "serial_number": 1000,
+                        "valid_days": 3650,
+                        "signing_algorithm": "sha256"
+                      }
+                    },
+                  
+                    "rate_limiting_config": {
+                      "rate_limit": 10,
+                      "rate_limit_burst": 5
+                    },
+                  
+                    "ip_filtering_config": {
+                      "whitelist": [],
+                      "blacklist": []
+                    },
+                  
+                    "caching_config": {
+                      "cache_max_size": 10485760, 
+                      "cache_ttl": 60
+                    },
+                  
+                    "basic_auth_config": {
+                      "auth_users": {
+                        "username": "password" 
+                      }
+                    },
+                  
+                    "virtual_hosts_config": {
+                      "virtual_hosts": {
+                        "mydomain.com": {
+                          "htdocs_dir": "htdocs/mydomain",
+                          "entry_point": "home.html"
+                        },
+                        "api.mydomain.com": {
+                          "htdocs_dir": "htdocs/api",
+                          "entry_point": "index.php"
+                        }
+                      }
+                    },
+                  
+                    "error_pages_config": {
+                      "error_pages": {
+                        "404": "error_pages/404.html",
+                        "500": "error_pages/500.html" 
+                      }
+                    }
+                  }
+                  
             </pre>
         </section>
     </main>
